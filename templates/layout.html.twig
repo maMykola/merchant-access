@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+
+{% include '_menu.html.twig' %}
+
+<div class="container">
+    <div class="left-column">
+        {% block content %}{% endblock %}
+    </div>
+    <div class="right-column">
+        {% block sidebar %}{% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

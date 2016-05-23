@@ -1,0 +1,6 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {% include 'Stores/_list_of_stores.html.twig' ignore missing with
+        {stores: all_stores} only %}
+{% endblock %}
