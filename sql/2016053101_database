@@ -1,20 +1,11 @@
 --
--- Create database to store information about merchants
---
-
-CREATE DATABASE `merchant_access` ;
-
-
---
 -- Create table `merchants` to store information about registered merchants
 --
-USE `merchant_access`;
+
 CREATE TABLE IF NOT EXISTS `merchants` (`id` TINYINT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`email` VARCHAR( 60 ) NOT NULL ,
-`name` VARCHAR( 60 ) NOT NULL ,
-`status` VARCHAR( 60 ) NOT NULL ,
-`reg_date` DATE NOT NULL ,
-UNIQUE (
-`email` 
-)
+	`email` VARCHAR( 60 ) NOT NULL ,
+	`name` VARCHAR( 60 ) NOT NULL ,
+	`status` VARCHAR( 60 ) NOT NULL ,
+	`reg_date` DATE NOT NULL ,
+	UNIQUE (`email`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
