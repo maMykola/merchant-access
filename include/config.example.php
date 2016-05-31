@@ -1,5 +1,5 @@
 <?php
-return array(
+$db_config = array(
 	'dbName'=>'merchant_access',
 	'dbLogin'=>'LOGIN',
 	'dbPassword'=>'PASSWORD'
