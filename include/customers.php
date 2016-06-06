@@ -2,6 +2,7 @@
 
 define('CUSTOMER_REQUIRED_FIELD', 'This is a required field.');
 define('CUSTOMER_NAME_MALFORMED', 'Name contains deprecated characters. Allowed only alpha characters.');
+use Phelium\Component\reCAPTCHA;
 
 /**
  * Return customer information gathered from the given $form_Data. 
@@ -86,7 +87,7 @@ function customerValidateRegistration($customer_info)
 		$errors['confirm_password'] = 'Your password confirmation do not match your password';
 	}
 	# check if a google captcha is valid
-	if (!isGoogleCaptchaValid($customer_info['captha'])) {
+	if (!isGoogleCaptchaValid($customer_info['captcha'])) {
 		$errors['captcha'] = 'Captha is not valid.';
 	}
 	return $errors;
@@ -97,34 +98,66 @@ function customerValidateRegistration($customer_info)
 /**
  * Return true if Google Captcha is valid. Otherwise return false.
  *
- * @param $captcha
+ * @param string $captcha
  * @return boolean
  * @author Michael Strohyi
  **/
 function isGoogleCaptchaValid($captcha)
 {
 	// !!! stub
-	return true;
+
+	$reCAPTCHA = new reCAPTCHA('6LdkhwITAAAAAESYoe0uBsVTji1VlqTdRjBqiiv6', '6LdkhwITAAAAAGbzE8f6dOpAfXtXiMVjGZd9lWUV');
+	return $reCAPTCHA->isValid($captcha);
 }
 
 
 /**
- * Return true if Email is valid. Otherwise return false.
+ * Return true if given $email has a valid form.
  *
- * @param $email
+ * @param  string  $email
  * @return boolean
- * @author Michael Strohyi
- **/
+ */
 function isEmailValid($email)
 {
-	// !!! stub
-	return true;
+  // First, we check that there's one @ symbol,
+  // and that the lengths are right.
+  if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $email)) {
+    // Email invalid because wrong number of characters
+    // in one section or wrong number of @ symbols.
+    return false;
+  }
+
+  // Split it into sections to make life easier
+  $email_array = explode("@", $email);
+  $local_array = explode(".", $email_array[0]);
+  for ($i = 0; $i < sizeof($local_array); $i++) {
+    if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/",
+            $local_array[$i])) {
+      return false;
+    }
+  }
+  // Check if domain is IP. If not,
+  // it should be valid domain name
+  if (!preg_match("/^\[?[0-9\.]+\]?$/", $email_array[1])) {
+    $domain_array = explode(".", $email_array[1]);
+    if (sizeof($domain_array) < 2) {
+      return false; // Not enough parts to domain
+    }
+    for ($i = 0; $i < sizeof($domain_array); $i++) {
+      if (!preg_match("/^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$/",
+              $domain_array[$i])) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
+
 
 /**
  * Save customer registration data into db. Return customer info.
  *
- * @param $form_data
+ * @param array $form_data
  * @return array
  * @author Michael Strohyi
  **/
@@ -137,7 +170,7 @@ function customerSaveRegistration($form_data)
 /**
  * Send the confirmation link to customer's email
  *
- * @param $customer
+ * @param array $customer
  * @return void
  * @author Michael Strohyi
  **/
