@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__  . '/../include/core.php';
-require_once INCLUDE_DIR . 'recaptchalib.php';
 require_once INCLUDE_DIR  . 'customers.php';
 
 

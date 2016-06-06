@@ -177,5 +177,5 @@ function customerSaveRegistration($form_data)
 function customerEmailConfirmation($customer)
 {
 	// !!! stub
-	
+	$cutomer = $customer;
 }
