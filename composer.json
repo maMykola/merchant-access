@@ -1,6 +1,7 @@
 {
     "require": {
         "twig/twig": "^1.24",
-        "phpunit/phpunit": "4.8.*"
+        "phpunit/phpunit": "4.8.*",
+        "phpunit/phpunit-selenium": ">=1.2"
     }
 }
