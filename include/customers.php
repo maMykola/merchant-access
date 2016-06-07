@@ -2,6 +2,8 @@
 
 define('CUSTOMER_REQUIRED_FIELD', 'This is a required field.');
 define('CUSTOMER_NAME_MALFORMED', 'Name contains deprecated characters. Allowed only alpha characters.');
+define('CAPTCHA_SITEKEY', $captcha_keys['sitekey']);
+define('CAPTCHA_SECRETEKEY', $captcha_keys['secretkey']);
 use Phelium\Component\reCAPTCHA;
 
 /**
@@ -22,14 +24,16 @@ function customerFetchRegistration ($form_data)
 		'confirm_password' => 'JohnPassword',
 		'captcha' => [],
 		];*/
-
-	$customer_info = [
-		'name'=>$_POST['inputName'],
-		'email'=>$_POST['inputEmail'],
-		'password'=>$_POST['inputPassword'],
-		'confirm_password'=>$_POST['inputConfirmPassword'],
-		'captcha'=>$_POST['g-recaptcha-response'],
-	];
+	$customer_info =[];
+	if (isset ($_POST['buttonSubmit'])){
+		$customer_info = [
+			'name'=>$_POST['inputName'],
+			'email'=>$_POST['inputEmail'],
+			'password'=>$_POST['inputPassword'],
+			'confirm_password'=>$_POST['inputConfirmPassword'],
+			'captcha'=>$_POST['g-recaptcha-response'],
+		];
+	}
 	return $customer_info;
 		
 }
@@ -107,8 +111,9 @@ function customerValidateRegistration($customer_info)
 function isGoogleCaptchaValid($captcha)
 {
 	// !!! stub
-
-	$reCAPTCHA = new reCAPTCHA('6LdkhwITAAAAAESYoe0uBsVTji1VlqTdRjBqiiv6', '6LdkhwITAAAAAGbzE8f6dOpAfXtXiMVjGZd9lWUV');
+	
+//	$reCAPTCHA = new reCAPTCHA('6LdkhwITAAAAAESYoe0uBsVTji1VlqTdRjBqiiv6', '6LdkhwITAAAAAGbzE8f6dOpAfXtXiMVjGZd9lWUV');
+	$reCAPTCHA = new reCAPTCHA(CAPTCHA_SITEKEY, CAPTCHA_SECRETEKEY);
 	return $reCAPTCHA->isValid($captcha);
 }
 
@@ -167,7 +172,7 @@ function customerSaveRegistration($form_data)
 {
 	$merchant_account = [
 		'email' => strtolower($form_data['email']),
-		'password' => $form_data['password'],
+		'password' => md5($form_data['password']),
 		'name' => $form_data['name'],
 		'status' => 'added',
 		'reg_date' => date("Y-m-d H:i:s"),

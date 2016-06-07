@@ -3,12 +3,11 @@ require_once __DIR__  . '/../include/core.php';
 require_once INCLUDE_DIR  . 'customers.php';
 
 
-
+# get customers registration data	
+$reg_data = customerFetchRegistration($_POST);
+$errors = [];
 
 if (isset ($_POST['buttonSubmit'])){
-
-	# get customers registration data	
-	$reg_data = customerFetchRegistration($_POST);
 
 	# check input values
 
@@ -53,17 +52,12 @@ if (isset ($_POST['buttonSubmit'])){
 				'reg_status'=> 'customer_exists',
 				]); 
 		}
-	} 
-	else {
-
-		# display registration page with errors if any exist
-		echo $twig->render('Signup/registration.html.twig', [
-			'customer'=>$reg_data,
-			'errors'=>$errors, 
-			]);
+	exit;
 	}
-
 }
-else {
-	echo $twig->render('Signup/registration.html.twig', []);
-}
+# display registration page with errors if any exist
+echo $twig->render('Signup/registration.html.twig', [
+	'customer'=>$reg_data,
+	'errors'=>$errors, 
+	'sitekey'=>$captcha_keys['sitekey'],
+	]);
