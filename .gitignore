@@ -4,5 +4,6 @@ composer.phar
 .DS_Store
 Thumbs.db
 config.php
+/logs/
 
 

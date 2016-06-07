@@ -69,9 +69,11 @@ function customerValidateRegistration($customer_info)
 	if (empty($customer_info['email'])) {
 		$errors['email'] = CUSTOMER_REQUIRED_FIELD;
 	}
-	# check if an email has a valid form
-	if (!isEmailValid($customer_info['email'])) {
-		$errors['email'] = 'Please, enter valid Email';
+	else {
+		# check if an email has a valid form
+		if (!isEmailValid($customer_info['email'])) {
+			$errors['email'] = 'Please, enter valid Email';
+		}
 	}
 	# check if a password is not empty
 	if (empty($customer_info['password'])) {
@@ -163,8 +165,23 @@ function isEmailValid($email)
  **/
 function customerSaveRegistration($form_data)
 {
-	// !!! stub
-	return [];
+	$merchant_account = [
+		'email' => strtolower($form_data['email']),
+		'password' => $form_data['password'],
+		'name' => $form_data['name'],
+		'status' => 'added',
+		'reg_date' => date("Y-m-d H:i:s"),
+	];
+	$query = "INSERT INTO `merchants` "._QInsert($merchant_account);
+	$res = _QExec($query);
+	if ($res !== false) {
+		$merchant_account['id'] = _QID();
+	}
+	else {
+		$merchant_account['id'] = 0;
+	}
+	
+  	return $merchant_account;
 }
 
 /**
@@ -177,5 +194,20 @@ function customerSaveRegistration($form_data)
 function customerEmailConfirmation($customer)
 {
 	// !!! stub
-	$cutomer = $customer;
+
+}
+
+/**
+ * Check if customer with entered email already exists. Return customer info from db 
+ * or empty array if does not exist
+ *
+ * @param array $merchant_account
+ * @return array
+ * @author Michael Strohyi
+ **/
+function customerExists($form_data)
+{
+	$query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = "._QData($form_data['email']);
+    _QExec($query);
+	return  _QElem();
 }
