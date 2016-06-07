@@ -9,4 +9,8 @@ require_once INCLUDE_DIR . 'db_func.php';
 
 
 $loader = new \Twig_Loader_Filesystem(TWIG_TEMPLATES_DIR);
-$twig = new \Twig_Environment($loader);
+$twig = new \Twig_Environment($loader, [
+ 'debug' => ENVIRONMENT == DEVELOPMENT_MODE,
+ ]);
+$twig->addExtension(new \Twig_Extension_Debug());
+$twig->addGlobal('app_environment', ENVIRONMENT);
