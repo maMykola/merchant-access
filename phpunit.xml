@@ -1,9 +1,9 @@
 <phpunit bootstrap="vendor/autoload.php">
 
   <testsuites>
-    <testsuite name="merchants">
+    <testsuite name="customer_registration">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
 
-</phpunit>
+ </phpunit>
