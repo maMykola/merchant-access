@@ -6,6 +6,59 @@ class Customer
 {
 
 	/**
+	 * Identifier (from the db)
+	 *
+	 * @var int
+	 **/
+	private $id;
+
+	/**
+	 * Name
+	 *
+	 * @var string
+	 **/
+	private $name;
+
+	/**
+	 * Email
+	 *
+	 * @var string
+	 **/
+	private $email;
+
+	/**
+	 * Password
+	 *
+	 * @var string
+	 **/
+	private $password;
+
+	/**
+	 * Confirm password (for registration only)
+	 *
+	 * @var string
+	 **/
+	private $password_confirm;
+
+
+	function __construct($id = null) {
+		$this->id = $id;
+
+		# load data from db if $id is not null
+	}
+
+	/**
+	 * Return id
+	 *
+	 * @return int
+	 * @author Mykola Martynov
+	 **/
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	/**
 	 * Return name
 	 *
 	 * @return string
@@ -13,8 +66,7 @@ class Customer
 	 **/
 	public function getName()
 	{
-		// !!! stub
-		return '';
+		return $this->name;
 	}
 
 	/**
@@ -26,7 +78,11 @@ class Customer
 	 **/
 	public function setName($name)
 	{
-		// !!! stub
+		# remove extra/trailing spaces
+		$name = trim(preg_replace('#\s+#', ' ', $name));
+
+		$this->name = $name;
+
 		return $this;
 	}
 
@@ -50,8 +106,7 @@ class Customer
 	 **/
 	public function getEmail()
 	{
-		// !!! stub
-		return '';
+		return $this->email;
 	}
 
 	/**
@@ -63,7 +118,11 @@ class Customer
 	 **/
 	public function setEmail($email)
 	{
-		// !!! stub
+		# remove trailing spaces
+		$email = trim($email);
+
+		$this->email = $email;
+
 		return $this;
 	}
 
@@ -87,8 +146,7 @@ class Customer
 	 **/
 	public function getPassword()
 	{
-		// !!! stub
-		return '';
+			return $this->password;
 	}
 
 	/**
@@ -100,7 +158,8 @@ class Customer
 	 **/
 	public function setPassword($password)
 	{
-		// !!! stub
+		$this->password = md5($password);
+
 		return $this;
 	}
 
@@ -113,7 +172,8 @@ class Customer
 	 **/
 	public function setConfirmPassword($password)
 	{
-		// !!! stub
+		$this->password_confirm = md5($password);
+		
 		return $this;
 	}
 

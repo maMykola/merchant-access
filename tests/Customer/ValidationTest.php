@@ -28,6 +28,8 @@ class CustomerValidationTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue(method_exists($customer, 'isValidPassword'), 'validation password');
 	}
 
+
+
 	/**
 	 * @dataProvider  validNames
 	 */
@@ -39,15 +41,26 @@ class CustomerValidationTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue($customer->isValidName());
 	}
 
+	/**
+	 * @dataProvider  validNames
+	 */
+	public function testGetterName($input_name, $valid_name)
+	{
+		$customer = $this->customer;
+		$customer->setName($input_name);
+
+		$this->assertEquals($valid_name, $customer->getName());
+	}
+
 	public function validNames()
 	{
 		return [
-			"simple name" => ["John"],
-			"name with trailing spaces" => [" John  "],
-			"name with capital letters" => ["JohnDoe"],
-			"two words" => ["John Doe"],
-			"two words with several spaces" => ["John  Doe"],
-			"many trailing spaces" => [" John  Doe   "],
+			"simple name" => ["John", "John"],
+			"name with trailing spaces" => [" John  ", "John"],
+			"name with capital letters" => ["JohnDoe", "JohnDoe"],
+			"two words" => ["John Doe", "John Doe"],
+			"two words with several spaces" => ["John  Doe", "John Doe"],
+			"many trailing spaces" => [" John  Doe   ", "John Doe"],
 		];
 	}
 
@@ -84,15 +97,26 @@ class CustomerValidationTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue($customer->isValidEmail());
 	}
 
+	/**
+	 * @dataProvider  validEmails
+	 */
+	public function testGetterEmail($input_email, $valid_email)
+	{
+		$customer = $this->customer;
+		$customer->setEmail($input_email);
+
+		$this->assertEquals($valid_email, $customer->getEmail());
+	}
+
 	public function validEmails()
 	{
 		return [
-			"email" => ["john@example.com"],
-			"email with trailing spaces" => [" john@example.com  "],
-			"email name with dot in name" => ["john.doe@example.com"],
-			"email on subdomain" => ["john.doe@fqdn.example.com"],
-			"email name with underscore" => ["john_doe@example.com"],
-			"email name with digits" => ["john25@example.com"],
+			"email" => ["john@example.com", "john@example.com"],
+			"email with trailing spaces" => [" john@example.com  ", "john@example.com"],
+			"email name with dot in name" => ["john.doe@example.com", "john.doe@example.com"],
+			"email on subdomain" => ["john.doe@fqdn.example.com", "john.doe@fqdn.example.com"],
+			"email name with underscore" => ["john_doe@example.com ", "john_doe@example.com"],
+			"email name with digits" => ["john25@example.com", "john25@example.com"],
 		];
 	}
 
