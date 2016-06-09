@@ -16,14 +16,6 @@ use Phelium\Component\reCAPTCHA;
  **/
 function customerFetchRegistration ($form_data)
 {
-	// !!! stub
-	/*$customer_info=[
-		'name' => 'John Doe',
-		'email' => 'John.Doe@example.com',
-		'password' => 'JohnPassword',
-		'confirm_password' => 'JohnPassword',
-		'captcha' => [],
-		];*/
 	$customer_info =[];
 	if (isset ($_POST['buttonSubmit'])){
 		$customer_info = [
@@ -31,8 +23,10 @@ function customerFetchRegistration ($form_data)
 			'email'=>$_POST['inputEmail'],
 			'password'=>$_POST['inputPassword'],
 			'confirm_password'=>$_POST['inputConfirmPassword'],
-			'captcha'=>$_POST['g-recaptcha-response'],
 		];
+		if (ENVIRONMENT!='development') {
+			$customer_info['captcha']=$_POST['g-recaptcha-response'];
+		}
 	}
 	return $customer_info;
 		
@@ -49,15 +43,7 @@ function customerFetchRegistration ($form_data)
 function customerValidateRegistration($customer_info)
 {
 	// !!! stub
-	/*
-	$errors = [
-		'name'=>'Name Error', 
-		'email'=>'eEmail Error', 
-		'password'=>'Password Error', 
-		'confir_password'=>'Confirmation Error', 
-		'captcha'=>'Captcha Error',
-		];
-	*/
+
 	# initialize empty errors
 	$errors = [];
 	
@@ -73,12 +59,12 @@ function customerValidateRegistration($customer_info)
 	if (empty($customer_info['email'])) {
 		$errors['email'] = CUSTOMER_REQUIRED_FIELD;
 	}
-	else {
 		# check if an email has a valid form
-		if (!isEmailValid($customer_info['email'])) {
+	elseif (!isEmailValid($customer_info['email'])) {
 			$errors['email'] = 'Please, enter valid Email';
-		}
 	}
+		#check if customer with given email already exists
+	//else $merchant_exists = customerExists($reg_data);
 	# check if a password is not empty
 	if (empty($customer_info['password'])) {
 		$errors['password'] = CUSTOMER_REQUIRED_FIELD;
@@ -93,8 +79,10 @@ function customerValidateRegistration($customer_info)
 		$errors['confirm_password'] = 'Your password confirmation do not match your password';
 	}
 	# check if a google captcha is valid
-	if (!isGoogleCaptchaValid($customer_info['captcha'])) {
-		$errors['captcha'] = 'Captha is not valid.';
+	if (ENVIRONMENT != 'development') {
+		if (!isGoogleCaptchaValid($customer_info['captcha'])) {
+			$errors['captcha'] = 'Captha is not valid.';
+		}
 	}
 	return $errors;
 
@@ -110,9 +98,7 @@ function customerValidateRegistration($customer_info)
  **/
 function isGoogleCaptchaValid($captcha)
 {
-	// !!! stub
 	
-//	$reCAPTCHA = new reCAPTCHA('6LdkhwITAAAAAESYoe0uBsVTji1VlqTdRjBqiiv6', '6LdkhwITAAAAAGbzE8f6dOpAfXtXiMVjGZd9lWUV');
 	$reCAPTCHA = new reCAPTCHA(CAPTCHA_SITEKEY, CAPTCHA_SECRETEKEY);
 	return $reCAPTCHA->isValid($captcha);
 }

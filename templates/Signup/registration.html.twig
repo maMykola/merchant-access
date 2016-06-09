@@ -45,7 +45,7 @@
               {% endif %}
             </div>
           </div>
- {#         {% if app_environment != 'development' %} #}
+          {% if app_environment != 'development' %} 
             <div class="form-group {{ errors.captcha is empty ? '' : 'has-error'}}">
               <div class="col-sm-2"></div>
               <div class="col-sm-10">
@@ -55,7 +55,7 @@
                 {% endif %}
               </div>
             </div>
- {#         {% endif %} #}
+          {% endif %} 
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button type="submit" class="btn btn-default" name="buttonSubmit">Register</button>
