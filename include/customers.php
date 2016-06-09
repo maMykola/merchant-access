@@ -75,7 +75,7 @@ function customerValidateRegistration($customer_info)
 	}
 
 	# check if a password is equal to confirmed password
-	if ($customer_info['password'] != $customer_info['confirm_password']) {
+	if ((!empty($customer_info['password'])) && ($customer_info['password'] != $customer_info['confirm_password'])) {
 		$errors['confirm_password'] = 'Your password confirmation do not match your password';
 	}
 	# check if a google captcha is valid

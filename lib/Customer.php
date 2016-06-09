@@ -95,7 +95,17 @@ class Customer
 	public function isValidName()
 	{
 		// !!! stub
-		return false;
+		# check if name is not empty
+		if (empty($this->name)) {
+//			$errors['name'] = CUSTOMER_REQUIRED_FIELD;
+			return false;
+		}
+		# check if a name has only allowed characters (alpha only)
+		elseif (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $this->name)) {
+//			$errors['name'] = CUSTOMER_NAME_MALFORMED;
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -135,7 +145,17 @@ class Customer
 	public function isValidEmail()
 	{
 		// !!! stub
-		return false;
+
+		if (empty($this->email)) {
+//			$errors['email'] = CUSTOMER_REQUIRED_FIELD;
+			return false;
+		}
+		# check if an email has a valid form
+		elseif (!$this->isGivenEmailValid($this->email)) {
+//			$errors['email'] = 'Please, enter valid Email';
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -186,7 +206,20 @@ class Customer
 	public function isValidPassword()
 	{
 		// !!! stub
-		return false;
+		if (empty($this->password)) {
+//			$errors['password'] = CUSTOMER_REQUIRED_FIELD;
+			return false;
+		}
+		# check if a confirm_password is not empty
+		if (empty($this->password_confirm)) {
+//			$errors['confirm_password'] = CUSTOMER_REQUIRED_FIELD;
+			return false;
+		}
+		if ((!empty($this->password)) && ($this->password != $this->password_confirm)) {
+//			$errors['confirm_password'] = 'Your password confirmation do not match your password';
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -200,6 +233,32 @@ class Customer
 	public function fetchInfo($post)
 	{
 		// !!! stub
+		if (isset ($post['buttonSubmit'])){
+			if (!empty($post['inputName'])) {
+				$this->setName($post['inputName']);
+			}
+			else {
+				$this->setName('');
+			}
+			if (!empty($post['inputEmail'])) {
+				$this->setEmail($post['inputEmail']);
+			}
+			else {
+				$this->setEmail('');
+			}
+			if (!empty($post['inputPassword'])) {
+				$this->setPassword($post['inputPassword']);
+			}
+			else {
+				$this->setPassword('');
+			}
+			if (!empty($post['inputConfirmPassword'])) {
+				$this->setConfirmPassword($post['inputConfirmPassword']);
+			}
+			else {
+				$this->setConfirmPassword('');
+			}
+		}
 		return $this;
 	}
 
@@ -212,6 +271,53 @@ class Customer
 	public function isValid()
 	{
 		// !!! stub
+
+
+		if (($this->isValidName() == true) && ($this->isValidEmail() == true) && ($this->isValidPassword()== true)) {
+			return true;
+		}
 		return false;
+	}
+
+	/**
+	 * Return true if given $email has a valid form.
+	 *
+	 * @param  string  $email
+	 * @return boolean
+	 **/
+	public function isGivenEmailValid($email)
+	{
+		  // First, we check that there's one @ symbol,
+  // and that the lengths are right.
+  if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $email)) {
+    // Email invalid because wrong number of characters
+    // in one section or wrong number of @ symbols.
+    return false;
+  }
+
+  // Split it into sections to make life easier
+  $email_array = explode("@", $email);
+  $local_array = explode(".", $email_array[0]);
+  for ($i = 0; $i < sizeof($local_array); $i++) {
+    if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/",
+            $local_array[$i])) {
+      return false;
+    }
+  }
+  // Check if domain is IP. If not,
+  // it should be valid domain name
+  if (!preg_match("/^\[?[0-9\.]+\]?$/", $email_array[1])) {
+    $domain_array = explode(".", $email_array[1]);
+    if (sizeof($domain_array) < 2) {
+      return false; // Not enough parts to domain
+    }
+    for ($i = 0; $i < sizeof($domain_array); $i++) {
+      if (!preg_match("/^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$/",
+              $domain_array[$i])) {
+        return false;
+      }
+    }
+  }
+  return true;
 	}
 }
