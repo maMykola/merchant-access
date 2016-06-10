@@ -178,7 +178,9 @@ class Customer
 	 **/
 	public function setPassword($password)
 	{
-		$this->password = md5($password);
+		if (!empty($password)) {
+			$this->password = md5($password);
+		}
 
 		return $this;
 	}
@@ -192,7 +194,9 @@ class Customer
 	 **/
 	public function setConfirmPassword($password)
 	{
-		$this->password_confirm = md5($password);
+		if (!empty($password)) {
+			$this->password_confirm = md5($password);
+		}
 		
 		return $this;
 	}
@@ -210,12 +214,8 @@ class Customer
 //			$errors['password'] = CUSTOMER_REQUIRED_FIELD;
 			return false;
 		}
-		# check if a confirm_password is not empty
-		if (empty($this->password_confirm)) {
-//			$errors['confirm_password'] = CUSTOMER_REQUIRED_FIELD;
-			return false;
-		}
-		if ((!empty($this->password)) && ($this->password != $this->password_confirm)) {
+
+		if ($this->password != $this->password_confirm) {
 //			$errors['confirm_password'] = 'Your password confirmation do not match your password';
 			return false;
 		}

@@ -36,7 +36,7 @@ class CustomerRegistrationTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals($customer->getName(), 'John Doe');
 		$this->assertEquals($customer->getEmail(), 'john.doe@example.com');
-		$this->assertEquals($customer->getPassword(), 'JohnDoePassword');
+		$this->assertEquals($customer->getPassword(), md5('JohnDoePassword'));
 	}
 
 	public function testGatheredMerchantInfoSpaceFree()
@@ -46,7 +46,7 @@ class CustomerRegistrationTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals($customer->getName(), 'John Doe');
 		$this->assertEquals($customer->getEmail(), 'john.doe@example.com');
-		$this->assertEquals($customer->getPassword(), 'JohnDoePassword');
+		$this->assertEquals($customer->getPassword(), md5('John Doe Password'));
 	}
 
 	public function testGatheredMerchantInfoIsValid()
