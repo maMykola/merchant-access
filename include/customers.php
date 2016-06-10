@@ -1,9 +1,7 @@
 <?php
 
-define('CUSTOMER_REQUIRED_FIELD', 'This is a required field.');
-define('CUSTOMER_NAME_MALFORMED', 'Name contains deprecated characters. Allowed only alpha characters.');
-define('CAPTCHA_SITEKEY', $captcha_keys['sitekey']);
-define('CAPTCHA_SECRETEKEY', $captcha_keys['secretkey']);
+//define('CAPTCHA_SITEKEY', $captcha_keys['sitekey']);
+//define('CAPTCHA_SECRETEKEY', $captcha_keys['secretkey']);
 use Phelium\Component\reCAPTCHA;
 
 /**
@@ -79,11 +77,7 @@ function customerValidateRegistration($customer_info)
 		$errors['confirm_password'] = 'Your password confirmation do not match your password';
 	}
 	# check if a google captcha is valid
-	if (ENVIRONMENT != 'development') {
-		if (!isGoogleCaptchaValid($customer_info['captcha'])) {
-			$errors['captcha'] = 'Captha is not valid.';
-		}
-	}
+	
 	return $errors;
 
 }
@@ -92,15 +86,21 @@ function customerValidateRegistration($customer_info)
 /**
  * Return true if Google Captcha is valid. Otherwise return false.
  *
- * @param string $captcha
- * @return boolean
+ * @return string
  * @author Michael Strohyi
  **/
-function isGoogleCaptchaValid($captcha)
+function isGoogleCaptchaValid()
 {
-	
-	$reCAPTCHA = new reCAPTCHA(CAPTCHA_SITEKEY, CAPTCHA_SECRETEKEY);
-	return $reCAPTCHA->isValid($captcha);
+
+	if (ENVIRONMENT != 'development') {
+		$reCAPTCHA = new reCAPTCHA(GOOGLE_CAPTCHA_SITEKEY, GOOGLE_CAPTCHA_SECRETKEY);
+		if (!$reCAPTCHA->isValid($_POST['g-recaptcha-response'])) {
+			$errors['captcha'] = 'Captha is not valid.';
+			return 'Captha is not valid.';
+		}
+	}
+		
+	return '';
 }
 
 
@@ -115,7 +115,7 @@ function isGoogleCaptchaValid($captcha)
  **/
 function customerSaveRegistration($form_data)
 {
-	$merchant_account = [
+	/*$merchant_account = [
 		'email' => strtolower($form_data['email']),
 		'password' => md5($form_data['password']),
 		'name' => $form_data['name'],
@@ -131,7 +131,8 @@ function customerSaveRegistration($form_data)
 		$merchant_account['id'] = 0;
 	}
 	
-  	return $merchant_account;
+  	return $merchant_account;*/
+  	return [];
 }
 
 /**
@@ -157,7 +158,9 @@ function customerEmailConfirmation($customer)
  **/
 function customerExists($form_data)
 {
-	$query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = "._QData($form_data['email']);
-    _QExec($query);
-	return  _QElem();
+	// !!! stub
+	//$query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = "._QData($form_data['email']);
+   // _QExec($query);
+	//return  _QElem();
+	return [];
 }

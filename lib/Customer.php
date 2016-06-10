@@ -4,6 +4,10 @@ namespace App;
 
 class Customer
 {
+	const CUSTOMER_REQUIRED_FIELD = 'This is a required field.';
+	const CUSTOMER_PASSWORD_CONFIRM_FAILED = 'Your password confirmation do not match your password.';
+	const CUSTOMER_NAME_MALFORMED = 'Name contains deprecated characters. Allowed only alpha characters.';
+	const CUSTOMER_EMAIL_NOT_VALID = 'Please, enter valid Email';
 
 	/**
 	 * Identifier (from the db)
@@ -39,6 +43,14 @@ class Customer
 	 * @var string
 	 **/
 	private $password_confirm;
+
+	/**
+	 * Confirm password (for registration only)
+	 *
+	 * @var array
+	 **/
+	private $errors;
+
 
 
 	function __construct($id = null) {
@@ -82,6 +94,7 @@ class Customer
 		$name = trim(preg_replace('#\s+#', ' ', $name));
 
 		$this->name = $name;
+		$this->validateName();
 
 		return $this;
 	}
@@ -89,23 +102,24 @@ class Customer
 	/**
 	 * Return true if current name has a valid form and not empty
 	 *
-	 * @return boolean
+	 * @return void
 	 * @author Mykola Martynov
 	 **/
-	public function isValidName()
+	private function validateName()
 	{
-		// !!! stub
+		unset($this->errors['name']);
+
 		# check if name is not empty
 		if (empty($this->name)) {
-//			$errors['name'] = CUSTOMER_REQUIRED_FIELD;
-			return false;
+			$this->errors['name'] = self::CUSTOMER_REQUIRED_FIELD;
+			return ;
 		}
+
 		# check if a name has only allowed characters (alpha only)
 		if (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $this->name)) {
-//			$errors['name'] = CUSTOMER_NAME_MALFORMED;
-			return false;
+			$this->errors['name'] = self::CUSTOMER_NAME_MALFORMED;
+			return ;
 		}
-		return true;
 	}
 
 	/**
@@ -132,6 +146,7 @@ class Customer
 		$email = trim($email);
 
 		$this->email = $email;
+		$this->validateEmail();
 
 		return $this;
 	}
@@ -139,23 +154,25 @@ class Customer
 	/**
 	 * Return true if current email has a valid form and not empty
 	 *
-	 * @return boolean
+	 * @return void
 	 * @author Mykola Martynov
 	 **/
-	public function isValidEmail()
+	private function validateEmail()
 	{
 		// !!! stub
-
+		unset($this->errors['email']);
 		if (empty($this->email)) {
-//			$errors['email'] = CUSTOMER_REQUIRED_FIELD;
-			return false;
+			$this->errors['email'] = self::CUSTOMER_REQUIRED_FIELD;
+			return ;
 		}
 		# check if an email has a valid form
-		elseif (!isEmailValid($this->email)) {
-//			$errors['email'] = 'Please, enter valid Email';
-			return false;
+		if (!isEmailValid($this->email)) {
+			$this->errors['email'] = self::CUSTOMER_EMAIL_NOT_VALID;
+			return ;
 		}
-		return true;
+
+		# !!! check if customer with given email already exists
+
 	}
 
 	/**
@@ -181,6 +198,7 @@ class Customer
 		if (!empty($password)) {
 			$this->password = md5($password);
 		}
+		$this->validatePassword();
 
 		return $this;
 	}
@@ -197,6 +215,7 @@ class Customer
 		if (!empty($password)) {
 			$this->password_confirm = md5($password);
 		}
+		$this->validatePassword();
 		
 		return $this;
 	}
@@ -204,22 +223,24 @@ class Customer
 	/**
 	 * Return true if current password not empty and equals to confirm password
 	 *
-	 * @return boolean
+	 * @return void
 	 * @author Mykola Martynov
 	 **/
-	public function isValidPassword()
+	private function validatePassword()
 	{
-		// !!! stub
+		unset($this->errors['password']);
+		unset($this->errors['password_confirm']);
 		if (empty($this->password)) {
-//			$errors['password'] = CUSTOMER_REQUIRED_FIELD;
-			return false;
+			$this->errors['password'] = self::CUSTOMER_REQUIRED_FIELD;
 		}
-
+		if (empty($this->password_confirm)) {
+			$this->errors['password_confirm'] = self::CUSTOMER_REQUIRED_FIELD;
+			return ;
+		}
 		if ($this->password != $this->password_confirm) {
-//			$errors['confirm_password'] = 'Your password confirmation do not match your password';
-			return false;
+			$this->errors['password_confirm'] = self::CUSTOMER_PASSWORD_CONFIRM_FAILED;
+			return ;
 		}
-		return true;
 	}
 
 	/**
@@ -236,18 +257,30 @@ class Customer
 		if (!empty($info['name'])) {
 			$this->setName($info['name']);
 		}
+		else {
+			$this->setName('');
+		}
 
 		if (!empty($info['email'])) {
 			$this->setEmail($info['email']);
+		}
+		else {
+			$this->setEmail('');
 		}
 		
 		if (!empty($info['password'])) {
 			$this->setPassword($info['password']);
 		}
+		else {
+			$this->setPassword('');
+		}
 		
 
 		if (!empty($info['password_confirm'])) {
 			$this->setConfirmPassword($info['password_confirm']);
+		}
+		else {
+			$this->setConfirmPassword('');
 		}
 		
 		return $this;
@@ -262,11 +295,34 @@ class Customer
 	public function isValid()
 	{
 
-		return 
-			$this->isValidName() && 
-			$this->isValidEmail() && 
-			$this->isValidPassword()
-			;
+		return empty($this->errors);
+			
 	}
 
+	/**
+	 * Return error string for given field $name
+	 *
+	 * @param string $name
+	 * @return string
+	 * @author Michael Strohyi
+	 **/
+	public function getErrorString($name)
+	{
+		// !!! stub
+
+		return $this->errors[$name];
+	}
+
+	/**
+	 * Return true if field with $name has error
+	 *
+	 * @param string $name
+	 * @return boolean
+	 * @author Michael Strohyi
+	 **/
+	public function hasError($name)
+	{
+		// !!! stub
+		return isset($this->errors[$name]);
+	}
 }

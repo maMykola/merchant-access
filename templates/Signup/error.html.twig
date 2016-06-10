@@ -6,7 +6,7 @@
 {% block body %}
 {% if reg_status == 'customer_exists' %}
 	<h1>Ooops!</h1>
-	<p>Customer with email {{ customer.email }} already exists</p>
+	<p>Customer with email {{ customer.getEmail() }} already exists</p>
 {% elseif reg_status == 'query_error' %}
 	<h1>Ooops!</h1>
 	<p>Some error happens. Please try again later</p>
