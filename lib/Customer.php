@@ -101,7 +101,7 @@ class Customer
 			return false;
 		}
 		# check if a name has only allowed characters (alpha only)
-		elseif (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $this->name)) {
+		if (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $this->name)) {
 //			$errors['name'] = CUSTOMER_NAME_MALFORMED;
 			return false;
 		}
@@ -166,7 +166,7 @@ class Customer
 	 **/
 	public function getPassword()
 	{
-			return $this->password;
+		return $this->password;
 	}
 
 	/**
@@ -226,39 +226,30 @@ class Customer
 	 * Return customer information gathered from the given $form_Data. 
  	 * Keep non-existing fields empty.
 	 *
-	 * @param  array  $post
+	 * @param  array  $info
 	 * @return self
 	 * @author Mykola Martynov
 	 **/
-	public function fetchInfo($post)
+	public function fetchInfo($info)
 	{
-		// !!! stub
-		if (isset ($post['buttonSubmit'])){
-			if (!empty($post['inputName'])) {
-				$this->setName($post['inputName']);
-			}
-			else {
-				$this->setName('');
-			}
-			if (!empty($post['inputEmail'])) {
-				$this->setEmail($post['inputEmail']);
-			}
-			else {
-				$this->setEmail('');
-			}
-			if (!empty($post['inputPassword'])) {
-				$this->setPassword($post['inputPassword']);
-			}
-			else {
-				$this->setPassword('');
-			}
-			if (!empty($post['inputConfirmPassword'])) {
-				$this->setConfirmPassword($post['inputConfirmPassword']);
-			}
-			else {
-				$this->setConfirmPassword('');
-			}
+
+		if (!empty($info['name'])) {
+			$this->setName($info['name']);
 		}
+
+		if (!empty($info['email'])) {
+			$this->setEmail($info['email']);
+		}
+		
+		if (!empty($info['password'])) {
+			$this->setPassword($info['password']);
+		}
+		
+
+		if (!empty($info['password_confirm'])) {
+			$this->setConfirmPassword($info['password_confirm']);
+		}
+		
 		return $this;
 	}
 
@@ -270,13 +261,12 @@ class Customer
 	 **/
 	public function isValid()
 	{
-		// !!! stub
 
-
-		if (($this->isValidName() == true) && ($this->isValidEmail() == true) && ($this->isValidPassword()== true)) {
-			return true;
-		}
-		return false;
+		return 
+			$this->isValidName() && 
+			$this->isValidEmail() && 
+			$this->isValidPassword()
+			;
 	}
 
 }
