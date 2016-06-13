@@ -5,6 +5,7 @@ require_once ROOT_DIR . 'vendor/autoload.php';
 require_once INCLUDE_DIR . 'config.php';
 require_once INCLUDE_DIR . 'helper_func.php';
 require_once INCLUDE_DIR . 'db_func.php';
+require_once ROOT_DIR . 'lib/GoogleCaptcha.php';
 
 
 
