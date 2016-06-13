@@ -91,7 +91,7 @@ class GoogleCaptcha
 	 **/
 	private function isDevelompmentMode()
 	{
-		return !defined('ENVIRONMENT') && ENVIRONMENT == 'development';
+		return defined('ENVIRONMENT') && ENVIRONMENT == 'development';
 	}
 
 	/**
