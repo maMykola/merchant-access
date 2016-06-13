@@ -78,7 +78,7 @@ class GoogleCaptcha
 	{
 		$this->error = '';
 		$reCAPTCHA = new reCAPTCHA($this->site_key, $this->secret_key);
-		if (!$reCAPTCHA->isValid($this->user_responce)) {
+		if (!$this->isDevelompmentMode() && !$reCAPTCHA->isValid($this->user_responce)) {
 			$this->error = 'Captcha is not valid.';
 		} 
 		return $this;

@@ -1,7 +1,5 @@
 <?php
 
-//define('CAPTCHA_SITEKEY', $captcha_keys['sitekey']);
-//define('CAPTCHA_SECRETEKEY', $captcha_keys['secretkey']);
 use Phelium\Component\reCAPTCHA;
 
 /**
