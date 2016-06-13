@@ -14,7 +14,7 @@
             <div class="col-sm-10">
               <input type="text" class="form-control" id="inputName " placeholder="Your Name" name="customer[name]" maxlenght="60" value="{{ customer.name }}">
               {% if customer.hasError('name') %}
-                <span id="helpBlock" class="help-block">{{ customer.getErrorString('name') }}</span>
+                <span id="helpBlock" class="help-block">{{ customer.errorString('name') }}</span>
               {% endif %}
             </div>
           </div>
@@ -23,7 +23,7 @@
             <div class="col-sm-10">
               <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="customer[email]" maxlenght="60" value="{{ customer.email }}">
               {% if customer.hasError('email')  %}
-                <span id="helpBlock" class="help-block">{{ customer.getErrorString('email') }}</span>
+                <span id="helpBlock" class="help-block">{{ customer.errorString('email') }}</span>
               {% endif %}
             </div>
           </div> 
@@ -32,7 +32,7 @@
             <div class="col-sm-10">
               <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="customer[password]" maxlenght="60">
               {% if customer.hasError('password') %}
-                <span id="helpBlock" class="help-block">{{ customer.getErrorString('password') }}</span>
+                <span id="helpBlock" class="help-block">{{ customer.errorString('password') }}</span>
               {% endif %}
             </div>
           </div>
@@ -41,21 +41,19 @@
             <div class="col-sm-10">
               <input type="password" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password" name="customer[password_confirm]" maxlenght="60">
               {% if customer.hasError('password_confirm') %}
-                <span id="helpBlock" class="help-block">{{ customer.getErrorString('password_confirm') }}</span>
+                <span id="helpBlock" class="help-block">{{ customer.errorString('password_confirm') }}</span>
               {% endif %}
             </div>
           </div>
-            {% if app_environment != 'development' %} 
-            <div class="form-group {{ errors.captcha is empty ? '' : 'has-error'}}">
+            <div class="form-group {{ captcha.isValid ? '' : 'has-error' }}">
               <div class="col-sm-2"></div>
               <div class="col-sm-10">
-                <div class="g-recaptcha" data-sitekey="{{sitekey}}"></div>
-                {% if not errors.captcha is empty %}
-                  <span id="helpBlock" class="help-block">{{errors.captcha}}</span>
+                {{ captcha.htmlCode |raw }}
+                {% if not captcha.isValid %}
+                  <span id="helpBlock" class="help-block">{{captcha.errorString}}</span>
                 {% endif %}
               </div>
             </div>
-          {% endif %} 
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button type="submit" class="btn btn-default" name="buttonSubmit">Register</button>
@@ -68,5 +66,5 @@
 
 {% block javascripts %}
   {{ parent() }}
-  <script src='https://www.google.com/recaptcha/api.js'></script>
+  {{ captcha.jSCode|raw }} 
 {% endblock %}
