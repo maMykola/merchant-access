@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use Phelium\Component\reCAPTCHA;
@@ -50,6 +51,7 @@ class GoogleCaptcha
 		if ($this->isDevelompmentMode()) {
 			return '';
 		}
+
 		return '<div class="g-recaptcha" data-sitekey="' . $this->site_key . '"></div>';
 	}
 
@@ -64,6 +66,7 @@ class GoogleCaptcha
 		if ($this->isDevelompmentMode()) {
 			return '';
 		}
+
 		return '<script src="https://www.google.com/recaptcha/api.js"></script>';
 	}
 
@@ -78,9 +81,11 @@ class GoogleCaptcha
 	{
 		$this->error = '';
 		$reCAPTCHA = new reCAPTCHA($this->site_key, $this->secret_key);
+
 		if (!$this->isDevelompmentMode() && !$reCAPTCHA->isValid($this->user_responce)) {
 			$this->error = 'Captcha is not valid.';
 		} 
+
 		return $this;
 	}
 	/**
@@ -106,6 +111,7 @@ class GoogleCaptcha
 		if (isset($info['g-recaptcha-response'])) {
 			$this->user_responce = $info['g-recaptcha-response'];
 		}
+
 		return $this;
 	}
 

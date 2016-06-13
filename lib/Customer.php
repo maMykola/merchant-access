@@ -159,10 +159,12 @@ class Customer
 	{
 		// !!! stub
 		unset($this->errors['email']);
+
 		if (empty($this->email)) {
 			$this->errors['email'] = self::CUSTOMER_REQUIRED_FIELD;
 			return ;
 		}
+
 		# check if an email has a valid form
 		if (!isEmailValid($this->email)) {
 			$this->errors['email'] = self::CUSTOMER_EMAIL_NOT_VALID;
@@ -170,6 +172,7 @@ class Customer
 		}
 
 		# !!! check if customer with given email already exists
+
 
 	}
 
@@ -226,13 +229,16 @@ class Customer
 	{
 		unset($this->errors['password']);
 		unset($this->errors['password_confirm']);
+
 		if (empty($this->password)) {
 			$this->errors['password'] = self::CUSTOMER_REQUIRED_FIELD;
 		}
+
 		if (empty($this->password_confirm)) {
 			$this->errors['password_confirm'] = self::CUSTOMER_REQUIRED_FIELD;
 			return ;
 		}
+
 		if ($this->password != $this->password_confirm) {
 			$this->errors['password_confirm'] = self::CUSTOMER_PASSWORD_CONFIRM_FAILED;
 			return ;
@@ -253,30 +259,18 @@ class Customer
 		if (!empty($info['name'])) {
 			$this->setName($info['name']);
 		}
-		else {
-			$this->setName('');
-		}
 
 		if (!empty($info['email'])) {
 			$this->setEmail($info['email']);
-		}
-		else {
-			$this->setEmail('');
 		}
 		
 		if (!empty($info['password'])) {
 			$this->setPassword($info['password']);
 		}
-		else {
-			$this->setPassword('');
-		}
 		
 
 		if (!empty($info['password_confirm'])) {
 			$this->setConfirmPassword($info['password_confirm']);
-		}
-		else {
-			$this->setConfirmPassword('');
 		}
 		
 		return $this;
@@ -290,9 +284,7 @@ class Customer
 	 **/
 	public function isValid()
 	{
-
-		return empty($this->errors);
-			
+		return empty($this->errors);			
 	}
 
 	/**
@@ -304,7 +296,6 @@ class Customer
 	 **/
 	public function getErrorString($name)
 	{
-
 		return $this->errors[$name];
 	}
 
@@ -317,7 +308,6 @@ class Customer
 	 **/
 	public function hasError($name)
 	{
-
 		return isset($this->errors[$name]);
 	}
 
@@ -344,6 +334,21 @@ class Customer
 		$this->validateName();
 		$this->validateEmail();
 		$this->validatePassword();
+
 		return $this;
+	}
+
+	/**
+	 * Return true if customer with given $email is already registered in db. 
+	 * Otherwise return false.
+	 *
+	 * @param string $email
+	 * @return void
+	 * @author Michael Strohyi
+	 **/
+	private function isRegistered($email)
+	{
+		/// !!! stub
+		return false;
 	}
 }

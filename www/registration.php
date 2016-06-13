@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__  . '/../include/core.php';
 require_once INCLUDE_DIR  . 'customers.php';
 
@@ -6,7 +7,6 @@ $customer = new App\Customer;
 $googleCaptcha = new App\GoogleCaptcha(GOOGLE_CAPTCHA_SITEKEY, GOOGLE_CAPTCHA_SECRETKEY);
 
 if (isset($_POST['buttonSubmit'])) {
-
 	# get customers registration data	
 	$customer
 		->fetchInfo($_POST['customer'])
@@ -16,8 +16,8 @@ if (isset($_POST['buttonSubmit'])) {
 		->fetchInfo($_POST)
 		->validate()
 		;
-	if ($customer->isValid() && $googleCaptcha->isValid()) {
 
+	if ($customer->isValid() && $googleCaptcha->isValid()) {
 		# save customer registration data into db
 		if (!$customer->save()) {
 			echo $twig->render('Signup/db-access-error.html.twig', [
