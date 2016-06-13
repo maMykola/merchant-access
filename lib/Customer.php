@@ -45,7 +45,7 @@ class Customer
 	private $password_confirm;
 
 	/**
-	 * Confirm password (for registration only)
+	 * Errors
 	 *
 	 * @var array
 	 **/
@@ -94,7 +94,6 @@ class Customer
 		$name = trim(preg_replace('#\s+#', ' ', $name));
 
 		$this->name = $name;
-		$this->validateName();
 
 		return $this;
 	}
@@ -146,7 +145,6 @@ class Customer
 		$email = trim($email);
 
 		$this->email = $email;
-		$this->validateEmail();
 
 		return $this;
 	}
@@ -198,7 +196,6 @@ class Customer
 		if (!empty($password)) {
 			$this->password = md5($password);
 		}
-		$this->validatePassword();
 
 		return $this;
 	}
@@ -215,7 +212,6 @@ class Customer
 		if (!empty($password)) {
 			$this->password_confirm = md5($password);
 		}
-		$this->validatePassword();
 		
 		return $this;
 	}
@@ -308,7 +304,6 @@ class Customer
 	 **/
 	public function getErrorString($name)
 	{
-		// !!! stub
 
 		return $this->errors[$name];
 	}
@@ -322,7 +317,33 @@ class Customer
 	 **/
 	public function hasError($name)
 	{
-		// !!! stub
+
 		return isset($this->errors[$name]);
+	}
+
+	/**
+	 * Save customer's registration data into db and return true. If error happens return false.
+	 *
+	 * @return boolean
+	 * @author Michael Strohyi
+	 **/
+	public function save()
+	{
+		// !!! stub
+		return true;
+	}
+
+	/**
+	 * Validate user-submitted data.
+	 *
+	 * @return self
+	 * @author Michael Strohyi
+	 **/
+	public function validate()
+	{
+		$this->validateName();
+		$this->validateEmail();
+		$this->validatePassword();
+		return $this;
 	}
 }
