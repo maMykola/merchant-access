@@ -41,3 +41,15 @@ function isEmailValid($email)
   }
     return true;
 }
+
+/**
+ * Return global $twig
+ *
+ * @return Twig_Environment
+ * @author Michael Strohyi
+ **/
+function getTwig()
+{
+    global $twig;
+    return $twig;
+}
