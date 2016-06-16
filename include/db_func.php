@@ -1,6 +1,4 @@
 <?php
-$db_conn = mysql_connect(DB_CONFIG_HOST, DB_CONFIG_LOGIN, DB_CONFIG_PASSWORD);
-mysql_select_db(DB_CONFIG_NAME, $db_conn);
 
 /**
  * Return MySQL resource for connection

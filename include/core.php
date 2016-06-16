@@ -12,3 +12,6 @@ $twig = new \Twig_Environment($loader, [
  ]);
 $twig->addExtension(new \Twig_Extension_Debug());
 $twig->addGlobal('app_environment', ENVIRONMENT);
+
+$db_conn = mysql_connect(DB_CONFIG_HOST, DB_CONFIG_LOGIN, DB_CONFIG_PASSWORD);
+mysql_select_db(DB_CONFIG_NAME, $db_conn);
