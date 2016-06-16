@@ -1,10 +1,10 @@
 <?php
 $db_config = [
-	'dbName'=>'merchant_access',
-	'dbLogin'=>'LOGIN',
-	'dbPassword'=>'PASSWORD',
-	'host'=>'localhost',
-	];
+    'dbName'=>'merchant_access',
+    'dbLogin'=>'LOGIN',
+    'dbPassword'=>'PASSWORD',
+    'host'=>'localhost',
+    ];
 
 
 

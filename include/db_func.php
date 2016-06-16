@@ -8,8 +8,8 @@
  */
 function get_db_conn()
 {
-  global $db_conn;
-  return $db_conn;
+    global $db_conn;
+    return $db_conn;
 }
 
 $db_res = null;
@@ -25,10 +25,10 @@ $db_res = null;
  
 function _QExec($query, $unbuffered = false)
 {
-  global $db_res;
-  $db_res = $unbuffered == true ? @mysql_unbuffered_query($query, get_db_conn()) : @mysql_query($query,
+    global $db_res;
+    $db_res = $unbuffered == true ? @mysql_unbuffered_query($query, get_db_conn()) : @mysql_query($query,
           get_db_conn());
-  return $db_res;
+    return $db_res;
 }
 
 /**
@@ -41,28 +41,30 @@ function _QExec($query, $unbuffered = false)
  */
 function _QAssoc($type = 'array', $column = 0)
 {
-  global $db_res;
+    global $db_res;
 
-  $list = array();
-  if (empty($db_res))
-    return $list;
+    $list = array();
+    if (empty($db_res)) {
+        return $list;
+    }
 
-  switch ($type) {
+    switch ($type) {
     case 'array':
       while (false !== ($row = @mysql_fetch_assoc($db_res))) {
-        $list[] = $row;
+          $list[] = $row;
       }
       break;
 
     case 'column':
       while (false !== ($row = @mysql_fetch_row($db_res))) {
-        if (!isset($row[$column]))
-          continue;
-        $list[] = $row[$column];
+          if (!isset($row[$column])) {
+              continue;
+          }
+          $list[] = $row[$column];
       }
       break;
   }
-  return $list;
+    return $list;
 }
 
 /**
@@ -73,11 +75,12 @@ function _QAssoc($type = 'array', $column = 0)
  */
 function _QElem($Default = array())
 {
-  global $db_res;
-  $row = @mysql_fetch_assoc($db_res);
-  if ($row === false)
-    $row = $Default;
-  return $row;
+    global $db_res;
+    $row = @mysql_fetch_assoc($db_res);
+    if ($row === false) {
+        $row = $Default;
+    }
+    return $row;
 }
 
 /**
@@ -87,8 +90,8 @@ function _QElem($Default = array())
  */
 function _QID()
 {
-  global $db_res;
-  return $db_res == false ? false : @mysql_insert_id(get_db_conn());
+    global $db_res;
+    return $db_res == false ? false : @mysql_insert_id(get_db_conn());
 }
 
 /**
@@ -101,14 +104,15 @@ function _QID()
  */
 function _QVal($pos = 0, $default = '')
 {
-  global $db_res;
-  $res = $default;
-  if ($db_res !== false) {
-    $row = @mysql_fetch_row($db_res);
-    if ($row !== false && isset($row[$pos]))
-      $res = $row[0];
-  }
-  return $res;
+    global $db_res;
+    $res = $default;
+    if ($db_res !== false) {
+        $row = @mysql_fetch_row($db_res);
+        if ($row !== false && isset($row[$pos])) {
+            $res = $row[0];
+        }
+    }
+    return $res;
 }
 
 /**
@@ -119,7 +123,7 @@ function _QVal($pos = 0, $default = '')
  */
 function _QString($str)
 {
-  return mysql_real_escape_string($str, get_db_conn());
+    return mysql_real_escape_string($str, get_db_conn());
 }
 
 /**
@@ -132,9 +136,9 @@ function _QString($str)
  */
 function _getSValue($Name, $Default = '')
 {
-  $qName = _QString($Name);
-  _QExec("SELECT Value FROM site_params WHERE Name = '{$qName}'");
-  return _QVal(0, $Default);
+    $qName = _QString($Name);
+    _QExec("SELECT Value FROM site_params WHERE Name = '{$qName}'");
+    return _QVal(0, $Default);
 }
 
 /**
@@ -145,13 +149,13 @@ function _getSValue($Name, $Default = '')
  */
 function _setSValue($Name, $Value)
 {
-  $qName = _QString($Name);
-  $qValue = _QString($Value);
-  _QExec("SELECT count(*) FROM site_params WHERE Name = '{$qName}'");
-  $count = _QVal(0, false);
-  $query = $count == false ? "INSERT INTO site_params (Name, Value) VALUES ('{$qName}', '{$qValue}')" :
+    $qName = _QString($Name);
+    $qValue = _QString($Value);
+    _QExec("SELECT count(*) FROM site_params WHERE Name = '{$qName}'");
+    $count = _QVal(0, false);
+    $query = $count == false ? "INSERT INTO site_params (Name, Value) VALUES ('{$qName}', '{$qValue}')" :
       "UPDATE site_params SET Value = '{$qValue}' WHERE Name = '{$qName}'";
-  _QExec($query);
+    _QExec($query);
 }
 
 /**
@@ -162,17 +166,17 @@ function _setSValue($Name, $Value)
  */
 function _QInsert($ar)
 {
-  $keys = '';
-  $vals = '';
-  foreach ($ar as $key => $val) {
-    if ($keys != '') {
-      $keys .= ', ';
-      $vals .= ', ';
+    $keys = '';
+    $vals = '';
+    foreach ($ar as $key => $val) {
+        if ($keys != '') {
+            $keys .= ', ';
+            $vals .= ', ';
+        }
+        $keys .= "`{$key}`";
+        $vals .= _QData($val);
     }
-    $keys .= "`{$key}`";
-    $vals .= _QData($val);
-  }
-  return "({$keys}) VALUES ({$vals})";
+    return "({$keys}) VALUES ({$vals})";
 }
 
 /**
@@ -182,14 +186,15 @@ function _QInsert($ar)
  */
 function _QUpdate($ar)
 {
-  $ct = '';
-  foreach ($ar as $key => $val) {
-    if ($ct != '')
-      $ct .= ', ';
-    $val = _QData($val);
-    $ct .= "`{$key}` = {$val}";
-  }
-  return $ct;
+    $ct = '';
+    foreach ($ar as $key => $val) {
+        if ($ct != '') {
+            $ct .= ', ';
+        }
+        $val = _QData($val);
+        $ct .= "`{$key}` = {$val}";
+    }
+    return $ct;
 }
 
 /**
@@ -200,15 +205,15 @@ function _QUpdate($ar)
  */
 function _QData($val)
 {
-  $ct = $val;
-  if (is_bool($val)) {
-    $ct = $val ? 'true' : 'false';
-  } elseif (is_null($val)) {
-    $ct = 'null';
-  } elseif (is_string($val)) {
-    $ct = "'" . _QString($val) . "'";
-  }
-  return $ct;
+    $ct = $val;
+    if (is_bool($val)) {
+        $ct = $val ? 'true' : 'false';
+    } elseif (is_null($val)) {
+        $ct = 'null';
+    } elseif (is_string($val)) {
+        $ct = "'" . _QString($val) . "'";
+    }
+    return $ct;
 }
 
 /**
@@ -221,17 +226,17 @@ function _QData($val)
  */
 function _TValue($Name, $Table, $add = true)
 {
-  $qName = _QString($Name);
-  $query = "SELECT ID FROM {$Table} WHERE Name = '{$qName}'";
+    $qName = _QString($Name);
+    $query = "SELECT ID FROM {$Table} WHERE Name = '{$qName}'";
 
-  _QExec($query);
-  $id = _QVal(0, false);
+    _QExec($query);
+    $id = _QVal(0, false);
 
-  if ($id === false && $add == true) {
-    _QExec("INSERT INTO {$Table} (Name) VALUES ('{$qName}')");
-    $id = _QID();
-  }
-  return $id;
+    if ($id === false && $add == true) {
+        _QExec("INSERT INTO {$Table} (Name) VALUES ('{$qName}')");
+        $id = _QID();
+    }
+    return $id;
 }
 
 /**
@@ -243,6 +248,6 @@ function _TValue($Name, $Table, $add = true)
  */
 function _PValue($ID, $Table)
 {
-  _QExec("SELECT Name FROM {$Table} WHERE ID = {$ID}");
-  return _QVal();
+    _QExec("SELECT Name FROM {$Table} WHERE ID = {$ID}");
+    return _QVal();
 }

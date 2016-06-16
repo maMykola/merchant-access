@@ -9,6 +9,5 @@
  **/
 function customerEmailConfirmation($customer)
 {
-	// !!! stub
-
+    // !!! stub
 }
