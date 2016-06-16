@@ -52,7 +52,6 @@ class Customer
 	private $errors;
 
 
-
 	function __construct($id = null) {
 		$this->id = $id;
 
@@ -171,9 +170,8 @@ class Customer
 			return ;
 		}
 
-		# !!! check if customer with given email already exists
-
-
+		# check if customer with given email already exists
+		$this->isRegistered($this->email);
 	}
 
 	/**
@@ -320,6 +318,45 @@ class Customer
 	public function save()
 	{
 		// !!! stub
+		/*$merchant_account = [
+			'email' => strtolower($this->email),
+			'password' => $this->password,
+			'name' => $this->name,
+			'status' => 'added',
+			'reg_date' => date("Y-m-d H:i:s"),
+		];
+		$query = "INSERT INTO `merchants` "._QInsert($merchant_account);
+		$res = _QExec($query);
+		if ($res === false) {
+			return false;
+		}*/
+
+// temp code without db_func use
+		$merchant_account = [
+			'email' => "'" . mysql_real_escape_string(strtolower($this->email)) . "'",
+			'password' => "'" . $this->password . "'",
+			'name' => "'" . mysql_real_escape_string($this->name) . "'",
+			'status' => "'added'",
+			'reg_date' => "'" . date("Y-m-d H:i:s") . "'",
+		];
+		$keys = '';
+		$vals = '';
+		foreach ($merchant_account as $key => $val) {
+			if ($keys != '') {
+		    	$keys .= ', ';
+		    	$vals .= ', ';
+		    }
+		    $keys .= "`{$key}`";
+		    $vals .= $val;
+		  }
+
+		$query = "INSERT INTO `merchants` "."({$keys}) VALUES ({$vals})";
+		$res  = mysql_query($query);
+		if ($res === false) {
+			return false;
+		}
+// end of temp code without db_func use
+
 		return true;
 	}
 
@@ -339,8 +376,7 @@ class Customer
 	}
 
 	/**
-	 * Return true if customer with given $email is already registered in db. 
-	 * Otherwise return false.
+	 * Check if customer with given $email is already registered in db
 	 *
 	 * @param string $email
 	 * @return void
@@ -348,7 +384,21 @@ class Customer
 	 **/
 	private function isRegistered($email)
 	{
-		/// !!! stub
-		return false;
+		// !!! stub
+	/*	$query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = "._QData($email);
+    	_QExec($query);
+	    $res_element = _QElem();
+	    if (!empty($res_element)) {
+	    	$this->errors['email'] = 'Customer with this email is already registered. Please visit login page to enter your account.';
+	    }*/
+
+// temp code without db_func use
+	    $query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = '". mysql_real_escape_string($this->email) ."'";
+	    $res  = mysql_query($query) or trigger_error(mysql_error().$query);
+  		$rows = mysql_num_rows($res);
+  		if ($rows != 0) {
+	    	$this->errors['email'] = 'Customer with this email is already registered. Please visit login page to enter your account.';
+	    }
+// end of temp code without db_func use
 	}
 }
