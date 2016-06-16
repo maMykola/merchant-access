@@ -317,6 +317,10 @@ class Customer
      **/
     public function save()
     {
+    	/// !!! stub
+    	$this->id = 999;
+        return true;
+        /// !!! endstub
         $merchant_account = [
             'email' => strtolower($this->email),
             'password' => $this->password,
@@ -328,9 +332,10 @@ class Customer
         $res = _QExec($query);
 
         if ($res === false) {
+        	$this->id = null;
             return false;
         }
-
+        $this->id = _QID();
         return true;
     }
 
@@ -365,5 +370,16 @@ class Customer
         if (!empty($res_element)) {
             $this->errors['email'] = 'Customer with this email is already registered. Please visit login page to enter your account.';
         }
+    }
+
+    /**
+     * Return  link for email validation
+     *
+     * @return string
+     * @author Michael Strohyi
+     **/
+    public function getValidationLink()
+    {
+    	return '/accounts/verify.php?id=' . $this->id . '&hash=' . md5($this->email . $this->id);
     }
 }
