@@ -1,8 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Success Registration{% endblock %}
+
+{% block title %}
+    {% if action == 'registered' %}
+        Success Registration
+    {% elseif action == 'verified' %} 
+        Success Verification  
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-	<h1>Congratulations!</h1>
-	<p>Registration complete. Check your email for confirmation registration.</p>
+    {% if action == 'registered' %}
+    	<h1>Congratulations!</h1>
+    	<p>Registration complete. Check your email for confirmation registration.</p>
+    {% elseif action == 'verified' %}
+        <h1>Congratulations!</h1>
+        <p>Verification complete. Visit our <a href="login.php">login page</a> to sign in your account</p>
+    {% endif %}
 {% endblock %}
