@@ -21,8 +21,8 @@ if (isset($_POST['buttonSubmit'])) {
 		# save customer registration data into db
 		if (!$customer->save()) {
 			echo $twig->render('Signup/db-access-error.html.twig', [
-					'customer'=>$customer, 
-					'message'=> 'Some arror happens. Please, try again later.',
+					'customer' => $customer, 
+					'message' => 'Some arror happens. Please, try again later.',
 					]); 
 			exit;
 		}
@@ -32,7 +32,8 @@ if (isset($_POST['buttonSubmit'])) {
 		
 		# display success registration page
 		echo $twig->render('Signup/success.html.twig', [
-			'customer'=>$customer
+			'customer' => $customer,
+			'action' => 'registered',
 			]); 
 		exit;
 	}
@@ -40,6 +41,6 @@ if (isset($_POST['buttonSubmit'])) {
 
 # display registration page with errors if any exist
 echo $twig->render('Signup/registration.html.twig', [
-	'customer'=>$customer,
-	'captcha'=>$googleCaptcha,
+	'customer' => $customer,
+	'captcha' => $googleCaptcha,
 	]);
