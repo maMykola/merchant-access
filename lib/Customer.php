@@ -51,12 +51,20 @@ class Customer
      **/
     private $errors;
 
+    /**
+     * Status
+     *
+     * @var string
+     **/
+    private $status;
+
 
     public function __construct($id = null)
     {
         $this->id = $id;
 
         # load data from db if $id is not null
+        $this->exists();
     }
 
     /**
@@ -407,6 +415,114 @@ class Customer
      **/
     public function getValidationLink()
     {
-    	return '/accounts/verify.php?id=' . $this->getId() . '&hash=' . md5($this->getEmail() . $this->getId());
+    	return '/accounts/verify.php?id=' . $this->getId() . '&hash=' . md5($this->getHash());
     }
+
+    /**
+     * Return true if customer with set $this->id is registered, otherwise return false
+     *
+     * @return boolean
+     * @author Michael Strohyi
+     **/
+    public function exists()
+    {
+        $id = $this->getId();
+        
+        if (empty($id)) {
+            return false;
+        }
+
+        $query = "SELECT `email`, `name`, `status`, `password` FROM `merchants` WHERE `id` = $id";
+        _QExec($query);
+        $res_element = _QElem();
+
+        if(empty($res_element)) {
+            return false;
+        }
+
+        $this->setName($res_element['name']);
+        $this->setEmail($res_element['email']);
+        $this->setStatus($res_element['status']);
+        $this->password = $res_element['password'];
+
+        return true;
+    }
+
+    /**
+     * Return true if hash is valid for this $customer, otherwise return false
+     *
+     * @param string $hash
+     * @return boolenan
+     * @author Michael Strohyi
+     **/
+    public function isHashValid($hash)
+    {
+        return $hash == $this->getHash();
+    }
+
+    /**
+     * Return true if customer's account is added into db, but not validated yet.
+     * Otherwise return false.
+     *
+     * @return boolean
+     * @author Michael Strohyi
+     **/
+    public function isAdded()
+    {
+        return $this->getStatus() == 'added';
+    }
+
+    /**
+     * Set 'active' status for customer's account and return true.
+     * Return false if some error happens.
+     *
+     * @return boolean
+     * @author Michael Strohyi
+     **/
+    public function activateAccount()
+    {
+        // !!! mockup
+        return true;
+        //end of mockup
+        $query = "UPDATE `merchants` SET `status` = 'active' WHERE `id` = " . $this->getId();
+
+        return  _QExec($query) != false;
+    }
+
+    /**
+     * Return hash for validation link for this $customer
+     *
+     * @return string
+     * @author Michael Strohyi
+     **/
+    public function getHash()
+    {
+        return md5($this->getEmail() . $this->getId());
+    }
+
+        /**
+     * Return name
+     *
+     * @return string
+     * @author Michael Strohyi
+     **/
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set name
+     *
+     * @param  string $status
+     * @return self
+     * @author Michael Strohyi
+     **/
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
 }

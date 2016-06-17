@@ -31,7 +31,7 @@ if (isset($_POST['buttonSubmit'])) {
  		customerEmailConfirmation($customer);
 		
 		# display success registration page
-		echo $twig->render('Signup/success.html.twig', [
+		echo $twig->render('Signup/success-registration.html.twig', [
 			'customer' => $customer,
 			'action' => 'registered',
 			]); 

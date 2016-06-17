@@ -3,24 +3,32 @@
 require_once __DIR__  . '/../../include/core.php';
 require_once INCLUDE_DIR  . 'customers.php';
 
-# verify link
-$customer = isLinkValid($_GET);
+$id = filter_input(INPUT_GET, 'id');
+$hash = filter_input(INPUT_GET, 'hash');
 
-if (empty($customer)) {
-    #show error validation page
+$customer = new App\Customer($id);
+
+if (!$customer->exists() || !$customer->isHashValid($hash)) {
+    # show error page with "broken validation link" message
     echo $twig->render('Signup/link-error.html.twig');
     exit;
 }
 
-# change customer's status in db
-if (!activateCustomer($customer['id'])) {
-    echo $twig->render('Signup/db-access-error.html.twig', [
+if (!$customer->isAdded()) {
+    # show error page with "account is already validated, please login" message
+    echo $twig->render('Signup/customer-exists.html.twig');
+    exit;
+}
+
+if (!$customer->activateAccount()) {
+    # show db access error page
+     echo $twig->render('Signup/db-access-error.html.twig', [
         'message' => 'Some arror happens. Please, try to verify your account later.'
         ]); 
     exit;
 }
 
-# show success validation page
-echo $twig->render('Signup/success.html.twig', [
-    'action' => 'verified'
+# show sccess validation page
+echo $twig->render('Signup/success-verification.html.twig', [
+    'customer' => $customer
     ]);
