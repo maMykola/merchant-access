@@ -53,3 +53,15 @@ function getTwig()
     global $twig;
     return $twig;
 }
+
+/**
+ * Return  link for email validation
+ *
+ * @param App\Customer $customer
+ * @return string
+ * @author Michael Strohyi
+ **/
+function getValidationLink($customer)
+    {
+      return '/accounts/verify.php?id=' . $customer->getId() . '&hash=' . $customer->getHash();
+    }

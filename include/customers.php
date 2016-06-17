@@ -27,9 +27,9 @@ function customerEmailConfirmation($customer)
  **/
 function getEmailMessage($template, $customer)
 {
-  	// !!! stub
   	return getTwig()->render("Email/${template}.html.twig", [
     		'customer' => $customer, 
     		'server' => SIGNUP_SERVER,
+            'validation_link' => getValidationLink($customer),
     		]);
 }

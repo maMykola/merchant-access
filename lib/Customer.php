@@ -329,7 +329,7 @@ class Customer
      **/
     public function getErrorString($name)
     {
-        return $this->errors[$name];
+        return $this->hasError($name) ? $this->errors[$name] : ''; 
     }
 
     /**
@@ -370,7 +370,7 @@ class Customer
         	$this->setId(null);
             return false;
         }
-        $this->serId(_QID());
+        $this->setId(_QID());
         return true;
     }
 
@@ -408,17 +408,6 @@ class Customer
     }
 
     /**
-     * Return  link for email validation
-     *
-     * @return string
-     * @author Michael Strohyi
-     **/
-    public function getValidationLink()
-    {
-    	return '/accounts/verify.php?id=' . $this->getId() . '&hash=' . md5($this->getHash());
-    }
-
-    /**
      * Return true if customer with set $this->id is registered, otherwise return false
      *
      * @return boolean
@@ -427,7 +416,7 @@ class Customer
     public function exists()
     {
         $id = $this->getId();
-        
+
         if (empty($id)) {
             return false;
         }
