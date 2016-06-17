@@ -70,6 +70,19 @@ class Customer
         return $this->id;
     }
 
+        /**
+     * Return id
+     *
+     * @param int $id
+     * @return self
+     * @author Mykola Martynov
+     **/
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     /**
      * Return name
      *
@@ -109,13 +122,14 @@ class Customer
         unset($this->errors['name']);
 
         # check if name is not empty
-        if (empty($this->name)) {
+        $name = $this->getName();
+        if (empty($name)) {
             $this->errors['name'] = self::CUSTOMER_REQUIRED_FIELD;
             return ;
         }
 
         # check if a name has only allowed characters (alpha only)
-        if (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $this->name)) {
+        if (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $name)) {
             $this->errors['name'] = self::CUSTOMER_NAME_MALFORMED;
             return ;
         }
@@ -142,7 +156,7 @@ class Customer
     public function setEmail($email)
     {
         # remove trailing spaces
-        $email = trim($email);
+        $email = strtolower(trim($email));
 
         $this->email = $email;
 
@@ -157,22 +171,22 @@ class Customer
      **/
     private function validateEmail()
     {
-        // !!! stub
         unset($this->errors['email']);
+        $email = $this->getEmail();
 
-        if (empty($this->email)) {
+        if (empty($email)) {
             $this->errors['email'] = self::CUSTOMER_REQUIRED_FIELD;
             return ;
         }
 
         # check if an email has a valid form
-        if (!isEmailValid($this->email)) {
+        if (!isEmailValid($email)) {
             $this->errors['email'] = self::CUSTOMER_EMAIL_NOT_VALID;
             return ;
         }
 
         # check if customer with given email already exists
-        $this->isRegistered($this->email);
+        $this->isRegistered($email);
     }
 
     /**
@@ -184,6 +198,17 @@ class Customer
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * Return confirm password
+     *
+     * @return string
+     * @author Michael Strohyi
+     **/
+    public function getConfirmPassword()
+    {
+        return $this->password_confirm;
     }
 
     /**
@@ -228,17 +253,19 @@ class Customer
     {
         unset($this->errors['password']);
         unset($this->errors['password_confirm']);
+        $password = $this->getPassword();
+        $password_confirm = $this->getConfirmPassword();
 
-        if (empty($this->password)) {
+        if (empty($password)) {
             $this->errors['password'] = self::CUSTOMER_REQUIRED_FIELD;
         }
 
-        if (empty($this->password_confirm)) {
+        if (empty($password_confirm)) {
             $this->errors['password_confirm'] = self::CUSTOMER_REQUIRED_FIELD;
             return ;
         }
 
-        if ($this->password != $this->password_confirm) {
+        if ($password != $password_confirm) {
             $this->errors['password_confirm'] = self::CUSTOMER_PASSWORD_CONFIRM_FAILED;
             return ;
         }
@@ -317,14 +344,14 @@ class Customer
      **/
     public function save()
     {
-    	/// !!! stub
-    	$this->id = 999;
+    	/// !!! mockup
+    	$this->setId(999);
         return true;
-        /// !!! endstub
+        /// !!! endmockup
         $merchant_account = [
-            'email' => strtolower($this->email),
-            'password' => $this->password,
-            'name' => $this->name,
+            'email' => $this->getEmail(),
+            'password' => $this->getPassword(),
+            'name' => $this->getName(),
             'status' => 'added',
             'reg_date' => date("Y-m-d H:i:s"),
         ];
@@ -332,10 +359,10 @@ class Customer
         $res = _QExec($query);
 
         if ($res === false) {
-        	$this->id = null;
+        	$this->setId(null);
             return false;
         }
-        $this->id = _QID();
+        $this->serId(_QID());
         return true;
     }
 
@@ -380,6 +407,6 @@ class Customer
      **/
     public function getValidationLink()
     {
-    	return '/accounts/verify.php?id=' . $this->id . '&hash=' . md5($this->email . $this->id);
+    	return '/accounts/verify.php?id=' . $this->getId() . '&hash=' . md5($this->getEmail() . $this->getId());
     }
 }
