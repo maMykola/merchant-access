@@ -8,6 +8,8 @@ class Customer
     const CUSTOMER_PASSWORD_CONFIRM_FAILED = 'Your password confirmation do not match your password.';
     const CUSTOMER_NAME_MALFORMED = 'Name contains deprecated characters. Allowed only alpha characters.';
     const CUSTOMER_EMAIL_NOT_VALID = 'Please, enter valid Email';
+    const CUSTOMER_WAITING_VALIDATION = 'added';
+    const CUSTOMER_ACTIVE= 'active';
 
     /**
      * Identifier (from the db)
@@ -64,7 +66,7 @@ class Customer
         $this->id = $id;
 
         # load data from db if $id is not null
-        $this->exists();
+        $this->loadCustomerData();
     }
 
     /**
@@ -76,19 +78,6 @@ class Customer
     public function getId()
     {
         return $this->id;
-    }
-
-        /**
-     * Return id
-     *
-     * @param int $id
-     * @return self
-     * @author Mykola Martynov
-     **/
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
     }
 
     /**
@@ -353,24 +342,25 @@ class Customer
     public function save()
     {
     	/// !!! mockup
-    	$this->setId(999);
+    	$this->id = 999;
         return true;
         /// !!! endmockup
         $merchant_account = [
             'email' => $this->getEmail(),
             'password' => $this->getPassword(),
             'name' => $this->getName(),
-            'status' => 'added',
+            'status' => self::CUSTOMER_WAITING_VALIDATION,
             'reg_date' => date("Y-m-d H:i:s"),
         ];
         $query = "INSERT INTO `merchants` "._QInsert($merchant_account);
         $res = _QExec($query);
 
         if ($res === false) {
-        	$this->setId(null);
+        	$this->id = null;
+            $this->eraseCustomerData();
             return false;
         }
-        $this->setId(_QID());
+        $this->id = _QID();
         return true;
     }
 
@@ -421,19 +411,6 @@ class Customer
             return false;
         }
 
-        $query = "SELECT `email`, `name`, `status`, `password` FROM `merchants` WHERE `id` = $id";
-        _QExec($query);
-        $res_element = _QElem();
-
-        if(empty($res_element)) {
-            return false;
-        }
-
-        $this->setName($res_element['name']);
-        $this->setEmail($res_element['email']);
-        $this->setStatus($res_element['status']);
-        $this->password = $res_element['password'];
-
         return true;
     }
 
@@ -456,9 +433,9 @@ class Customer
      * @return boolean
      * @author Michael Strohyi
      **/
-    public function isAdded()
+    public function isWaitingValidation()
     {
-        return $this->getStatus() == 'added';
+        return $this->getStatus() == self::CUSTOMER_WAITING_VALIDATION;
     }
 
     /**
@@ -473,7 +450,7 @@ class Customer
         // !!! mockup
         return true;
         //end of mockup
-        $query = "UPDATE `merchants` SET `status` = 'active' WHERE `id` = " . $this->getId();
+        $query = "UPDATE `merchants` SET `status` = '".self::CUSTOMER_ACTIVE."' WHERE `id` = " . $this->getId();
 
         return  _QExec($query) != false;
     }
@@ -512,6 +489,52 @@ class Customer
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * Load data for customer from db 
+     *
+     * @return void
+     * @author Michael Strohyi
+     **/
+    private function loadCustomerData()
+    {
+        $this->eraseCustomerData();
+        $id = $this->id;
+
+        if (empty($id)) {
+            return ;
+        }
+
+        $query = "SELECT `email`, `name`, `status`, `password` FROM `merchants` WHERE `id` = $id";
+        _QExec($query);
+        $res_element = _QElem();
+
+        if(empty($res_element)) {
+            $this->id = null;
+            return ;
+        }
+
+        $this->setName($res_element['name']);
+        $this->setEmail($res_element['email']);
+        $this->setStatus($res_element['status']);
+        $this->password = $res_element['password'];
+    }
+
+    /**
+     * Unset all vars for Customer
+     *
+     * @return void
+     * @author Michael Strohyi
+     **/
+    private function eraseCustomerData()
+    {
+            $this->email = null;
+            $this->name = null;
+            $this->password = null;
+            $this->password_confirm = null;
+            $this->errors = null;
+            $this->status = null;
     }
 
 }

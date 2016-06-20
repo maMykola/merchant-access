@@ -14,7 +14,7 @@ if (!$customer->exists() || !$customer->isHashValid($hash)) {
     exit;
 }
 
-if (!$customer->isAdded()) {
+if (!$customer->isWaitingValidation()) {
     # show error page with "account is already validated, please login" message
     echo $twig->render('Signup/customer-exists.html.twig');
     exit;
