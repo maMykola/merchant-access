@@ -24,7 +24,7 @@ if (!$customer->activateAccount()) {
     # show db access error page
      echo $twig->render('Signup/db-access-error.html.twig', [
         'message' => 'Some arror happens. Please, try to verify your account later.'
-        ]); 
+        ]);
     exit;
 }
 

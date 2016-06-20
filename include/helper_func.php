@@ -62,6 +62,6 @@ function getTwig()
  * @author Michael Strohyi
  **/
 function getValidationLink($customer)
-    {
-      return '/accounts/verify.php?id=' . $customer->getId() . '&hash=' . $customer->getHash();
-    }
+{
+    return '/accounts/verify.php?id=' . $customer->getId() . '&hash=' . $customer->getHash();
+}

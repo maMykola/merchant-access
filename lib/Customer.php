@@ -318,7 +318,7 @@ class Customer
      **/
     public function getErrorString($name)
     {
-        return $this->hasError($name) ? $this->errors[$name] : ''; 
+        return $this->hasError($name) ? $this->errors[$name] : '';
     }
 
     /**
@@ -341,8 +341,8 @@ class Customer
      **/
     public function save()
     {
-    	/// !!! mockup
-    	$this->id = 999;
+        /// !!! mockup
+        $this->id = 999;
         return true;
         /// !!! endmockup
         $merchant_account = [
@@ -356,7 +356,7 @@ class Customer
         $res = _QExec($query);
 
         if ($res === false) {
-        	$this->id = null;
+            $this->id = null;
             $this->eraseCustomerData();
             return false;
         }
@@ -510,7 +510,7 @@ class Customer
         _QExec($query);
         $res_element = _QElem();
 
-        if(empty($res_element)) {
+        if (empty($res_element)) {
             $this->id = null;
             return ;
         }
@@ -529,12 +529,11 @@ class Customer
      **/
     private function eraseCustomerData()
     {
-            $this->email = null;
-            $this->name = null;
-            $this->password = null;
-            $this->password_confirm = null;
-            $this->errors = null;
-            $this->status = null;
+        $this->email = null;
+        $this->name = null;
+        $this->password = null;
+        $this->password_confirm = null;
+        $this->errors = null;
+        $this->status = null;
     }
-
 }
