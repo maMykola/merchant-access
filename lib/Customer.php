@@ -9,7 +9,7 @@ class Customer
     const CUSTOMER_NAME_MALFORMED = 'Name contains deprecated characters. Allowed only alpha characters.';
     const CUSTOMER_EMAIL_NOT_VALID = 'Please, enter valid Email';
     const CUSTOMER_WAITING_VALIDATION = 'added';
-    const CUSTOMER_ACTIVE= 'active';
+    const CUSTOMER_ACTIVE = 'active';
 
     /**
      * Identifier (from the db)
@@ -407,11 +407,7 @@ class Customer
     {
         $id = $this->getId();
 
-        if (empty($id)) {
-            return false;
-        }
-
-        return true;
+        return !empty($id);
     }
 
     /**
@@ -506,7 +502,7 @@ class Customer
             return ;
         }
 
-        $query = "SELECT `email`, `name`, `status`, `password` FROM `merchants` WHERE `id` = $id";
+        $query = "SELECT * FROM `merchants` WHERE `id` = $id";
         _QExec($query);
         $res_element = _QElem();
 
@@ -519,6 +515,9 @@ class Customer
         $this->setEmail($res_element['email']);
         $this->setStatus($res_element['status']);
         $this->password = $res_element['password'];
+        $this->password = $res_element['status'];
+
+        return ;
     }
 
     /**
@@ -535,5 +534,60 @@ class Customer
         $this->password_confirm = null;
         $this->errors = null;
         $this->status = null;
+    }
+
+    /**
+     * Set id for customer with given $email if it exists.
+     * Otherwise set null.
+     *
+     * @param string $email
+     * @return void
+     * @author Michael Strohyi
+     **/
+    public function findByEmail($email)
+    {
+        $query = "SELECT `id` FROM `merchants` WHERE `email` = "._QData($email);
+        _QExec($query);
+        $res_element = _QElem();
+
+        if (!empty($res_element)) {
+            $this->id = $res_element['id'];
+            return ;
+        }
+
+        $this->id = null;
+        return ;
+    }
+
+    /**
+     * Return true if given $password matches customer's password in db.
+     * Otherwise return false.
+     *
+     * @param string $pasword
+     * @return boolean
+     * @author Michael Strohyi
+     **/
+    public function isPasswordMatch($password)
+    {
+        $query = "SELECT 'id' FROM `merchants` WHERE `id` = " . $this->getId() . " AND `password` = '" . md5($password) . "'";
+        $res = _QExec($query);
+        $res_element = _QElem();
+
+        return !empty($res_element);
+    }
+
+    /**
+     * Return true if customer's status in db is CUSTOMER_ACTIVE, otherwise return false.
+     *
+     * @return boolean
+     * @author Michael Strohyi
+     **/
+    public function isActive()
+    {
+        $query = "SELECT `status` FROM `merchants` WHERE `id` = " . $this->getId();
+        $res = _QExec($query);
+        $res_element = _QElem();
+
+        return !empty($res_element) && $res_element['status'] == self::CUSTOMER_ACTIVE;
     }
 }
