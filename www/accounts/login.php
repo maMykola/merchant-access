@@ -6,10 +6,12 @@ require_once __DIR__  . '/../../include/core.php';
 
 $error = null;
 
-if (isset($_POST['buttonSubmit'])) {    
+$login_data = filter_input(INPUT_POST, 'login', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+if (!empty($login_data)) {    
     # steps to do when form was submitted
-    $email = filter_input(INPUT_POST, 'email');
-    $password = filter_input(INPUT_POST, 'password');
+    $email = empty($login_data['email']) ? '' : $login_data['email'];
+    $password = empty($login_data['password']) ? '' : $login_data['password'];
 
     $customer = App\Customer::findByEmail($email);
 
@@ -18,9 +20,7 @@ if (isset($_POST['buttonSubmit'])) {
     } elseif (!$customer->isActive()) {
         $error = 'Your account is not validated. Please, use link from validation mail.';
     } else {
-        session_start();
-        $_SESSION['customer_id'] = $customer->getId();
-        $_SESSION['customer_name'] = $customer->getName();
+        setLoggedCustomer($customer);
        
         redirectToPage('main');
         exit;
