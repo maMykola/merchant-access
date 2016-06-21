@@ -368,10 +368,6 @@ class Customer
      **/
     public function save()
     {
-        /// !!! mockup
-        $this->id = 999;
-        return true;
-        /// !!! endmockup
         $merchant_account = [
             'email' => $this->getEmail(),
             'password' => $this->getPassword(),
@@ -466,9 +462,6 @@ class Customer
      **/
     public function activateAccount()
     {
-        // !!! mockup
-        return true;
-        //end of mockup
         $query = "UPDATE `merchants` SET `status` = '".self::CUSTOMER_ACTIVE."' WHERE `id` = " . $this->getId();
 
         return  _QExec($query) != false;
@@ -598,10 +591,6 @@ class Customer
      **/
     public function isActive()
     {
-        // !!! mockup
-        return true;
-        // !!! end of mockup
-        
         return $this->getStatus() == self::CUSTOMER_ACTIVE;
     }
 }
