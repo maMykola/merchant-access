@@ -8,6 +8,7 @@ class Customer
     const CUSTOMER_PASSWORD_CONFIRM_FAILED = 'Your password confirmation do not match your password.';
     const CUSTOMER_NAME_MALFORMED = 'Name contains deprecated characters. Allowed only alpha characters.';
     const CUSTOMER_EMAIL_NOT_VALID = 'Please, enter valid Email';
+    const CUSTOMER_EMAIL_EXISTS = 'Customer with this email is already registered. Please visit login page to enter your account.';
     const CUSTOMER_WAITING_VALIDATION = 'added';
     const CUSTOMER_ACTIVE = 'active';
 
@@ -122,13 +123,13 @@ class Customer
         $name = $this->getName();
         if (empty($name)) {
             $this->errors['name'] = self::CUSTOMER_REQUIRED_FIELD;
-            return ;
+            return;
         }
 
         # check if a name has only allowed characters (alpha only)
         if (!preg_match('#^[a-z]+(\s[a-z]+)?$#i', $name)) {
             $this->errors['name'] = self::CUSTOMER_NAME_MALFORMED;
-            return ;
+            return;
         }
     }
 
@@ -153,11 +154,23 @@ class Customer
     public function setEmail($email)
     {
         # remove trailing spaces
-        $email = strtolower(trim($email));
+        $email = $this->prepareEmail($email);
 
         $this->email = $email;
 
         return $this;
+    }
+
+    /**
+     * Prepare given $email to use in Customer
+     *
+     * @param string $email
+     * @return string
+     * @author Michael Strohyi
+     **/
+    static private function prepareEmail($email)
+    {
+        return strtolower(trim($email));
     }
 
     /**
@@ -173,17 +186,19 @@ class Customer
 
         if (empty($email)) {
             $this->errors['email'] = self::CUSTOMER_REQUIRED_FIELD;
-            return ;
+            return;
         }
 
         # check if an email has a valid form
         if (!isEmailValid($email)) {
             $this->errors['email'] = self::CUSTOMER_EMAIL_NOT_VALID;
-            return ;
+            return;
         }
 
         # check if customer with given email already exists
-        $this->isRegistered($email);
+        if ($this->isRegistered($email)) {
+            $this->errors['email'] = self::CUSTOMER_EMAIL_EXISTS;
+        }
     }
 
     /**
@@ -218,10 +233,22 @@ class Customer
     public function setPassword($password)
     {
         if (!empty($password)) {
-            $this->password = md5($password);
+            $this->password = $this->encryptPassword($password);
         }
 
         return $this;
+    }
+
+    /**
+     * Return encrypted password
+     *
+     * @param string $password
+     * @return string
+     * @author Michael Strohyi
+     **/
+    private function encryptPassword($password)
+    {
+        return md5($password);
     }
 
     /**
@@ -234,7 +261,7 @@ class Customer
     public function setConfirmPassword($password)
     {
         if (!empty($password)) {
-            $this->password_confirm = md5($password);
+            $this->password_confirm = $this->encryptPassword($password);
         }
         
         return $this;
@@ -259,12 +286,12 @@ class Customer
 
         if (empty($password_confirm)) {
             $this->errors['password_confirm'] = self::CUSTOMER_REQUIRED_FIELD;
-            return ;
+            return;
         }
 
         if ($password != $password_confirm) {
             $this->errors['password_confirm'] = self::CUSTOMER_PASSWORD_CONFIRM_FAILED;
-            return ;
+            return;
         }
     }
 
@@ -383,18 +410,14 @@ class Customer
      * Check if customer with given $email is already registered in db
      *
      * @param string $email
-     * @return void
+     * @return boolean
      * @author Michael Strohyi
      **/
     private function isRegistered($email)
     {
-        $query = "SELECT `id`, `status` FROM `merchants` WHERE `email` = "._QData($email);
-        _QExec($query);
-        $res_element = _QElem();
+        $customer = self::findByEmail($email);
 
-        if (!empty($res_element)) {
-            $this->errors['email'] = 'Customer with this email is already registered. Please visit login page to enter your account.';
-        }
+        return $customer->exists() && $customer->getId() != $this->getId();
     }
 
     /**
@@ -499,7 +522,7 @@ class Customer
         $id = $this->id;
 
         if (empty($id)) {
-            return ;
+            return;
         }
 
         $query = "SELECT * FROM `merchants` WHERE `id` = $id";
@@ -508,16 +531,15 @@ class Customer
 
         if (empty($res_element)) {
             $this->id = null;
-            return ;
+            return;
         }
 
         $this->setName($res_element['name']);
         $this->setEmail($res_element['email']);
         $this->setStatus($res_element['status']);
         $this->password = $res_element['password'];
-        $this->password = $res_element['status'];
 
-        return ;
+        return;
     }
 
     /**
@@ -541,22 +563,18 @@ class Customer
      * Otherwise set null.
      *
      * @param string $email
-     * @return void
+     * @return App\Customer
      * @author Michael Strohyi
      **/
-    public function findByEmail($email)
+    static public function findByEmail($email)
     {
+        $emal = self::prepareEmail($email);
         $query = "SELECT `id` FROM `merchants` WHERE `email` = "._QData($email);
-        _QExec($query);
-        $res_element = _QElem();
+        _QExec($query, true);
+        $res_assoc = _QAssoc();
+        $customer_id = empty($res_assoc) ? null : current(current($res_assoc));
 
-        if (!empty($res_element)) {
-            $this->id = $res_element['id'];
-            return ;
-        }
-
-        $this->id = null;
-        return ;
+        return new self($customer_id);
     }
 
     /**
@@ -569,11 +587,7 @@ class Customer
      **/
     public function isPasswordMatch($password)
     {
-        $query = "SELECT 'id' FROM `merchants` WHERE `id` = " . $this->getId() . " AND `password` = '" . md5($password) . "'";
-        $res = _QExec($query);
-        $res_element = _QElem();
-
-        return !empty($res_element);
+        return $this->encryptPassword($password) == $this->getPassword();
     }
 
     /**
@@ -584,10 +598,10 @@ class Customer
      **/
     public function isActive()
     {
-        $query = "SELECT `status` FROM `merchants` WHERE `id` = " . $this->getId();
-        $res = _QExec($query);
-        $res_element = _QElem();
-
-        return !empty($res_element) && $res_element['status'] == self::CUSTOMER_ACTIVE;
+        // !!! mockup
+        return true;
+        // !!! end of mockup
+        
+        return $this->getStatus() == self::CUSTOMER_ACTIVE;
     }
 }
