@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require_once __DIR__ . '/constants.php';
 require_once ROOT_DIR . 'vendor/autoload.php';
@@ -19,14 +20,12 @@ mysql_select_db(DB_CONFIG_NAME, $db_conn);
 
 if (!defined('LOGIN_CHECK') || LOGIN_CHECK == true) {
     # get user data from session
-    if (!isset($_SESSION)) {
-        session_start();
-    }
+    $customer = getLoggedCustomer();
 
-    if (empty($_SESSION['customer_id'])) {
+    if (!$customer->exists()){
         redirectToPage('login');
-    } else {
-        $customer_id = $_SESSION['customer_id'];
-        $customer_name = $_SESSION['customer_name'];
+    } elseif (!$customer->isActive()) {
+        echo $twig->render('Panel/customer-not-active.html.twig');
+        exit;
     }
 }

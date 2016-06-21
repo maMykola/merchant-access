@@ -65,3 +65,38 @@ function getValidationLink($customer)
 {
     return '/accounts/verify.php?id=' . $customer->getId() . '&hash=' . $customer->getHash();
 }
+
+/**
+ * Get customer's id' from session and return object Customer with data for this customer's id
+ *
+ * @return App\Customer
+ * @author Michael Strohyi
+ **/
+function getLoggedCustomer()
+{
+  $customer_id = empty($_SESSION['customer_id']) ? null : $_SESSION['customer_id'];
+  return new App\Customer($customer_id);
+}
+
+/**
+ * Set session for logged customer
+ *
+ * @param App\Customer $customer
+ * @return void
+ * @author Michael Strohyi
+ **/
+function setLoggedCustomer($customer)
+{
+  $_SESSION['customer_id'] = $customer->getId();
+}
+
+/**
+ * Destroy current session
+ *
+ * @return void
+ * @author Michael Strohyi
+ **/
+function clearLoggedCustomer()
+{
+  session_unset();
+}
