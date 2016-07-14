@@ -3,4 +3,7 @@ composer.phar
 /logs/
 .DS_Store
 Thumbs.db
+config.php
+/logs/
+
 
